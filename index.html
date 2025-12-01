@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>T132 Database – Troop 132 Event Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Password Protection Screen -->
+    <div id="passwordScreen" class="password-screen">
+        <div class="password-container">
+            <div class="password-box">
+                <div class="password-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="64" height="64">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h2 class="password-title">T132 Database</h2>
+                <p class="password-subtitle">Please enter the password to access this site</p>
+                <form id="passwordForm" class="password-form">
+                    <div class="password-input-wrapper">
+                        <input 
+                            type="password" 
+                            id="passwordInput" 
+                            class="password-input" 
+                            placeholder="Enter password"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+                    <div id="passwordError" class="password-error hidden">
+                        Incorrect password. Please try again.
+                    </div>
+                    <button type="submit" class="password-submit">
+                        Enter Site
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until authenticated) -->
+    <div id="mainContent" class="hidden">
+    <!-- Header with Title -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="title">T132 Database</h1>
+                    <p class="subtitle">Troop 132 Event Attendance System</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Homepage Title with TailwindCSS -->
+            <div class="text-center mb-12 py-8">
+                <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-blue-600 bg-clip-text text-transparent">
+                    T132 Event Database
+                </h1>
+                <p class="text-xl text-white/70">Search scout event history and view upcoming events</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading">
+                <div class="spinner"></div>
+                <p>Loading event data...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-message hidden">
+                <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p id="errorText"></p>
+                <button onclick="initializeApp()" class="btn btn-secondary">Try Again</button>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div id="statsSection" class="stats-section hidden">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalScouts">0</div>
+                    <div class="stat-label">Total Scouts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAdults">0</div>
+                    <div class="stat-label">Total Adults</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalFutureEvents">0</div>
+                    <div class="stat-label">Upcoming Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPastEvents">0</div>
+                    <div class="stat-label">Past Events</div>
+                </div>
+            </div>
+
+            <!-- Scout Search Section -->
+            <div id="searchSection" class="search-section hidden">
+                <div class="search-container-wrapper">
+                    <div class="search-container">
+                        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="Search for a scout by name (first, last, or full name)..."
+                            autocomplete="off"
+                        >
+                        <button onclick="clearSearch()" class="btn-clear" id="clearSearchBtn" style="display: none;">Clear</button>
+                    </div>
+                    <!-- Search Suggestions Dropdown -->
+                    <div id="searchSuggestions" class="search-suggestions hidden"></div>
+                </div>
+            </div>
+
+            <!-- Scout Results Section -->
+            <div id="scoutResultsSection" class="scout-results-section hidden">
+                <!-- Scout history will be rendered here -->
+            </div>
+
+            <!-- Export Section (for backup) -->
+            <div id="exportSection" class="export-section hidden">
+                <div class="export-card">
+                    <h3 class="text-xl font-semibold mb-4">Export Events Backup</h3>
+                    <p class="text-white/70 mb-4 text-sm">
+                        Download a backup of all events (future and past) as JSON. Data is stored locally in your browser.
+                    </p>
+                    <button onclick="exportEventsJSON()" class="btn btn-primary">
+                        💾 Download Backup JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Troop 132 Database System</p>
+            <p class="footer-note">Events loaded directly from Google Sheets • Works entirely in your browser</p>
+        </div>
+    </footer>
+    </div>
+    <!-- End Main Content -->
+
+    <!-- JavaScript Modules -->
+    <script src="js/password.js"></script>
+    <script src="js/googleSheet.js"></script>
+    <script src="js/historyManager.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Initialize password protection -->
+    <script>
+        // Initialize password protection first
+        document.addEventListener('DOMContentLoaded', function() {
+            const isAuth = window.PasswordProtection.initPasswordProtection();
+            
+            // Only initialize app if already authenticated
+            if (isAuth) {
+                if (typeof initializeApp === 'function') {
+                    initializeApp();
+                }
+                if (typeof startAutoRefresh === 'function') {
+                    startAutoRefresh();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
